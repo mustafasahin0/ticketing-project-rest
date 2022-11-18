@@ -1,0 +1,59 @@
+package com.cydeo.controller;
+
+import com.cydeo.dto.UserDTO;
+import com.cydeo.entity.ResponseWrapper;
+import com.cydeo.entity.User;
+import com.cydeo.mapper.UserMapper;
+import com.cydeo.service.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@RestController
+@RequestMapping("/api/v1/user")
+public class UserController {
+
+    private final UserService userService;
+    private final UserMapper userMapper;
+
+    public UserController(UserService userService, UserMapper userMapper) {
+        this.userService = userService;
+        this.userMapper = userMapper;
+    }
+
+    @GetMapping
+    public ResponseEntity<ResponseWrapper> getAllUsers() {
+        List<UserDTO> userDTOList = userService.listAllUsers();
+        return ResponseEntity.ok(new ResponseWrapper("Users are successfully retrieved", userDTOList, HttpStatus.OK));
+    }
+
+    //GET Specific user based on Username
+
+    @GetMapping("/{userName}")
+    public ResponseEntity<ResponseWrapper> getUserByUserName(@PathVariable("userName") String userName) {
+        UserDTO userDTO = userService.findByUserName(userName);
+        return ResponseEntity.ok(new ResponseWrapper("User is successfully retrieved", userDTO, HttpStatus.OK));
+    }
+
+    @PostMapping()
+    public ResponseEntity<ResponseWrapper> createUser(@RequestBody UserDTO user) {
+        userService.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseWrapper("User is successfully created", HttpStatus.CREATED));
+    }
+
+    @PutMapping()
+    public ResponseEntity<ResponseWrapper> updateUser(@RequestBody UserDTO user) {
+        userService.update(user);
+        return ResponseEntity.ok(new ResponseWrapper("User is successfully updated", user, HttpStatus.OK));
+    }
+
+    //Delete Specific User
+    @DeleteMapping("/{userName}")
+    public ResponseEntity<ResponseWrapper> deleteUser(@PathVariable("userName") String userName) {
+        userService.deleteByUserName(userName);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+}
