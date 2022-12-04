@@ -21,6 +21,8 @@ import static org.keycloak.admin.client.CreatedResponseUtil.getCreatedId;
 
 @Service
 public class KeycloakServiceImpl implements KeycloakService {
+
+
     private final KeycloakProperties keycloakProperties;
 
     public KeycloakServiceImpl(KeycloakProperties keycloakProperties) {
@@ -29,6 +31,7 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public Response userCreate(UserDTO userDTO) {
+
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
         credential.setTemporary(false);
@@ -42,6 +45,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         keycloakUser.setCredentials(asList(credential));
         keycloakUser.setEmailVerified(true);
         keycloakUser.setEnabled(true);
+
 
         Keycloak keycloak = getKeycloakInstance();
 
@@ -68,7 +72,9 @@ public class KeycloakServiceImpl implements KeycloakService {
 
     @Override
     public void delete(String userName) {
+
         Keycloak keycloak = getKeycloakInstance();
+
         RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
         UsersResource usersResource = realmResource.users();
 
@@ -79,7 +85,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         keycloak.close();
     }
 
-    private Keycloak getKeycloakInstance() {
+    private Keycloak getKeycloakInstance(){
         return Keycloak.getInstance(keycloakProperties.getAuthServerUrl(),
                 keycloakProperties.getMasterRealm(), keycloakProperties.getMasterUser()
                 , keycloakProperties.getMasterUserPswd(), keycloakProperties.getMasterClient());
