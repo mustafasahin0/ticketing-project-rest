@@ -1,5 +1,6 @@
 package com.cydeo.aspect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.keycloak.adapters.springsecurity.account.SimpleKeycloakAccount;
@@ -11,9 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 @Aspect
 @Configuration
+@Slf4j
 public class LoggingAspect {
 
-    Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
+    //Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
 
     private String getUserName() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -28,19 +30,19 @@ public class LoggingAspect {
     @Before("anyControllerOperation()")
     public void anyBeforeControllerOperationAdvice(JoinPoint joinPoint) {
         String userName = getUserName();
-        logger.info("Before () -> User: {} - Method: {} - Parameters: {}", userName, joinPoint.getSignature().toShortString(), joinPoint.getArgs());
+        log.info("Before () -> User: {} - Method: {} - Parameters: {}", userName, joinPoint.getSignature().toShortString(), joinPoint.getArgs());
     }
 
     @AfterReturning(pointcut = "anyControllerOperation()", returning = "results")
     public void anyAfterReturningControllerOperationAdvice(JoinPoint joinPoint, Object results) {
         String userName = getUserName();
-        logger.info("AfterReturning -> User: {} - Method: {} - Result: {}", userName, joinPoint.getSignature().toShortString(), results.toString());
+        log.info("AfterReturning -> User: {} - Method: {} - Result: {}", userName, joinPoint.getSignature().toShortString(), results.toString());
     }
 
     @AfterThrowing(pointcut = "anyControllerOperation()", throwing = "exception")
     public void anyAfterThrowingControllerOperationAdvice(JoinPoint joinPoint, RuntimeException exception) {
         String username = getUserName();
-        logger.info("AfterThrowing -> User: {} = Method: {} - Exception: {}", username, joinPoint.getSignature().toShortString(), exception.getMessage());
+        log.info("AfterThrowing -> User: {} = Method: {} - Exception: {}", username, joinPoint.getSignature().toShortString(), exception.getMessage());
     }
 
 }
